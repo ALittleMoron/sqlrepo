@@ -1,12 +1,12 @@
-name: "test, lint and publish"
+name: "Check project quality: test, lint, type-checking, vulnerability and dead code detection"
 
 on:
   push:
   workflow_dispatch:
 
 jobs:
-  test:
-    name: "Check package quality (Python ${{ matrix.python-version }}"
+  quality:
+    name: "Check quality (Python ${{ matrix.python-version }}"
     strategy:
       fail-fast: true
       matrix:

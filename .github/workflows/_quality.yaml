@@ -17,7 +17,7 @@ on:
 
 
 jobs:
-  lint:
+  quality:
     timeout-minutes: ${{ inputs.timeout }}
     runs-on: ${{ inputs.os }}
     steps:
