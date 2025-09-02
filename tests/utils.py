@@ -7,11 +7,6 @@ from sqlalchemy import ForeignKey, inspect
 from sqlalchemy.exc import SQLAlchemyError
 from sqlalchemy.ext.hybrid import hybrid_method, hybrid_property
 from sqlalchemy.orm import DeclarativeBase, Mapped, mapped_column, relationship
-from sqlalchemy_utils import (
-    create_database,
-    database_exists,
-    drop_database,
-)
 
 if TYPE_CHECKING:
     from sqlalchemy.ext.asyncio import AsyncSession
@@ -24,18 +19,6 @@ T = TypeVar("T")
 def coin_flip() -> bool:
     """Coin flip: True or False."""
     return bool(random.getrandbits(1))
-
-
-def create_db(uri: str) -> None:
-    """Drop the database at ``uri`` and create a brand new one."""
-    destroy_db(uri)
-    create_database(uri)
-
-
-def destroy_db(uri: str) -> None:
-    """Destroy the database at ``uri``, if it exists."""
-    if database_exists(uri):
-        drop_database(uri)
 
 
 def generate_datetime_list(
