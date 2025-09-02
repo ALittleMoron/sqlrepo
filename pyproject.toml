@@ -1,6 +1,6 @@
 [project]
 name = "sqlrepo"
-version = "5.5.1"
+version = "6.0.0"
 description = "sqlalchemy repositories with crud operations and other utils for it."
 authors = [{ name = "Dmitriy Lunev", email = "dima.lunev14@gmail.com" }]
 requires-python = ">=3.11"
@@ -34,10 +34,6 @@ dev = [
     "pyment>=0.3.3",
     "bandit>=1.8.6",
 ]
-
-
-[project.optional-dependencies]
-fastapi = ["fastapi>=0.100", "verbose_http_exceptions>=1.1.1"]
 
 [tool.ruff]
 lint.select = ["ALL"]

@@ -7,7 +7,7 @@ from mimesis import Datetime, Locale, Text
 from sqlalchemy import create_engine
 from sqlalchemy.ext.asyncio import async_scoped_session, async_sessionmaker, create_async_engine
 from sqlalchemy.orm import scoped_session, sessionmaker
-from sqlalchemy_utils import database_exists, create_database
+from sqlalchemy_utils import create_database, database_exists
 
 from tests.utils import (
     Base,
