@@ -27,7 +27,7 @@ services:
       dockerfile: ./docker/Dockerfile.test
     command:
       [
-        "pdm",
+        "uv",
         "run",
         "pytest",
         "./tests",

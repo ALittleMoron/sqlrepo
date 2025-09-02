@@ -48,16 +48,10 @@ With pip:
 pip install sqlrepo
 ```
 
-With poetry:
+With poetry / PDM / uv:
 
 ```bash
-poetry add sqlrepo
-```
-
-With PDM:
-
-```bash
-pdm add sqlrepo
+<tool> add sqlrepo
 ```
 
 or other dependency managers.

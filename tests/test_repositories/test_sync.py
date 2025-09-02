@@ -11,11 +11,11 @@ from tests.utils import (
     MyModel,
     assert_compare_db_item_list,
     assert_compare_db_item_list_with_dict,
+    assert_compare_db_item_list_with_list_of_dicts,
     assert_compare_db_item_none_fields,
     assert_compare_db_item_with_dict,
     assert_compare_db_items,
     coin_flip,
-    assert_compare_db_item_list_with_list_of_dicts,
 )
 
 if TYPE_CHECKING:
@@ -28,11 +28,11 @@ text_faker = Text(locale=Locale.EN)
 dt_faker = Datetime(locale=Locale.EN)
 
 
-class EmptyMyModelRepo(SyncRepository[MyModel]):  # noqa: D101
+class EmptyMyModelRepo(SyncRepository[MyModel]):
     pass
 
 
-class MyModelRepo(SyncRepository[MyModel]):  # noqa: D101
+class MyModelRepo(SyncRepository[MyModel]):
     config = RepositoryConfig(
         specific_column_mapping={"some_specific_column": MyModel.name},
         disable_id_field="id",
@@ -41,7 +41,7 @@ class MyModelRepo(SyncRepository[MyModel]):  # noqa: D101
     )
 
 
-class MyModelRepoWithInstrumentedAttributes(SyncRepository[MyModel]):  # noqa: D101
+class MyModelRepoWithInstrumentedAttributes(SyncRepository[MyModel]):
     config = RepositoryConfig(
         specific_column_mapping={"some_specific_column": MyModel.name},
         disable_id_field=MyModel.id,
@@ -50,25 +50,25 @@ class MyModelRepoWithInstrumentedAttributes(SyncRepository[MyModel]):  # noqa: D
     )
 
 
-def test_get_item(  # noqa: D103
+def test_get_item(
     db_sync_session: "Session",
     mymodel_sync_factory: "SyncFactoryFunctionProtocol[MyModel]",
 ) -> None:
     item = mymodel_sync_factory(db_sync_session, commit=True)
     repo = MyModelRepo(db_sync_session)
-    db_item = repo.get(filters=dict(id=item.id))
+    db_item = repo.get(filters={"id": item.id})
     assert db_item is not None, f"MyModel with id {item.id} not found in db."
     assert_compare_db_items(item, db_item)
 
 
-def test_get_item_not_found(db_sync_session: "Session") -> None:  # noqa: D103
+def test_get_item_not_found(db_sync_session: "Session") -> None:
     repo = MyModelRepo(db_sync_session)
     incorrect_id = 1
-    db_item = repo.get(filters=dict(id=incorrect_id))
+    db_item = repo.get(filters={"id": incorrect_id})
     assert db_item is None, f"MyModel with id {incorrect_id} was found in db (but it shouldn't)."
 
 
-def test_get_items_count(  # noqa: D103
+def test_get_items_count(
     db_sync_session: "Session",
     mymodel_sync_factory: "SyncFactoryFunctionProtocol[MyModel]",
 ) -> None:
@@ -81,7 +81,7 @@ def test_get_items_count(  # noqa: D103
     assert count == create_count
 
 
-def test_get_items_count_with_filter(  # noqa: D103
+def test_get_items_count_with_filter(
     db_sync_session: "Session",
     mymodel_sync_factory: "SyncFactoryFunctionProtocol[MyModel]",
 ) -> None:
@@ -90,11 +90,11 @@ def test_get_items_count_with_filter(  # noqa: D103
         mymodel_sync_factory(db_sync_session, commit=False)
     db_sync_session.commit()
     repo = MyModelRepo(db_sync_session)
-    count = repo.count(filters=dict(id=item.id))
+    count = repo.count(filters={"id": item.id})
     assert count == 1
 
 
-def test_get_items_list(  # noqa: D103
+def test_get_items_list(
     db_sync_session: "Session",
     mymodel_sync_factory: "SyncFactoryFunctionProtocol[MyModel]",
 ) -> None:
@@ -198,7 +198,7 @@ def test_change_item(
     db_sync_session: "Session",
     mymodel_sync_factory: "SyncFactoryFunctionProtocol[MyModel]",
     update_data: dict[str, Any],
-    expected_updated_flag: bool,  # noqa: FBT001
+    expected_updated_flag: bool,
 ) -> None:
     item = mymodel_sync_factory(db_sync_session)
     repo = MyModelRepo(db_sync_session)
@@ -244,9 +244,9 @@ def test_change_item_none_check(
     db_sync_session: "Session",
     mymodel_sync_factory: "SyncFactoryFunctionProtocol[MyModel]",
     update_data: dict[str, Any],
-    expected_updated_flag: bool,  # noqa: FBT001
-    set_none: bool,  # noqa: FBT001
-    allowed_none_fields: Any,  # noqa: FBT001, ANN401
+    expected_updated_flag: bool,
+    set_none: bool,
+    allowed_none_fields: Any,
     none_set_fields: set[str],
 ) -> None:
     item = mymodel_sync_factory(db_sync_session)
@@ -334,7 +334,7 @@ def test_disable_items_direct_value_with_instrumented_attributes(
     )
 
 
-def test_exists_success_any_item(  # noqa: D103
+def test_exists_success_any_item(
     db_sync_session: "Session",
     mymodel_sync_factory: "SyncFactoryFunctionProtocol[MyModel]",
 ) -> None:
@@ -345,7 +345,7 @@ def test_exists_success_any_item(  # noqa: D103
     assert exists is True
 
 
-def test_exists_success_direct_item(  # noqa: D103
+def test_exists_success_direct_item(
     db_sync_session: "Session",
     mymodel_sync_factory: "SyncFactoryFunctionProtocol[MyModel]",
 ) -> None:
@@ -356,13 +356,13 @@ def test_exists_success_direct_item(  # noqa: D103
     assert exists is True
 
 
-def test_not_exists(db_sync_session: "Session") -> None:  # noqa: D103
+def test_not_exists(db_sync_session: "Session") -> None:
     repo = MyModelRepo(db_sync_session)
     exists = repo.exists()
     assert exists is False
 
 
-def test_not_exists_direct_item(  # noqa: D103
+def test_not_exists_direct_item(
     db_sync_session: "Session",
     mymodel_sync_factory: "SyncFactoryFunctionProtocol[MyModel]",
 ) -> None:

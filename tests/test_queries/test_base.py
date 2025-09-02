@@ -4,14 +4,14 @@ from zoneinfo import ZoneInfo
 
 import pytest
 from freezegun import freeze_time
-from sqlalchemy import ColumnElement, and_, delete, func, insert, or_, select, update, exists
+from sqlalchemy import ColumnElement, and_, delete, exists, func, insert, or_, select, update
 from sqlalchemy.orm import joinedload
 from sqlalchemy_dev_utils.exc import NoModelAttributeError
 from sqlalchemy_filter_converter import SimpleFilterConverter
 
 from sqlrepo.exc import QueryError
 from sqlrepo.queries import BaseQuery
-from tests.utils import MyModel, OtherModel, NotModelClass
+from tests.utils import MyModel, NotModelClass, OtherModel
 
 now = datetime.datetime.now(tz=ZoneInfo("UTC"))
 
@@ -33,11 +33,11 @@ now = datetime.datetime.now(tz=ZoneInfo("UTC"))
         ),
     ],
 )
-def test_resolve_specific_columns(  # noqa
-    model: Any,  # noqa: ANN401
-    specific_column_mapping: Any,  # noqa: ANN401
+def test_resolve_specific_columns(
+    model: Any,
+    specific_column_mapping: Any,
     elements: list[str | ColumnElement[Any]],
-    expected_result: list[str | ColumnElement[Any]],  # noqa
+    expected_result: list[str | ColumnElement[Any]],
 ) -> None:
     query = BaseQuery(
         filter_converter=SimpleFilterConverter(specific_column_mapping=specific_column_mapping),
@@ -70,8 +70,8 @@ def test_resolve_specific_columns(  # noqa
         ),
     ],
 )
-def test_resolve_specific_columns_error(  # noqa
-    model: Any,  # noqa: ANN401
+def test_resolve_specific_columns_error(
+    model: Any,
     elements: list[str | ColumnElement[Any]],
     exception: type[Exception],
     match: str | None,
@@ -121,10 +121,10 @@ def test_resolve_specific_columns_error(  # noqa
         ),
     ],
 )
-def test_resolve_and_apply_joins(  # noqa
-    stmt: Any,  # noqa
-    joins: Any,  # noqa
-    expected_result: Any,  # noqa
+def test_resolve_and_apply_joins(
+    stmt: Any,
+    joins: Any,
+    expected_result: Any,
 ) -> None:
     query = BaseQuery(filter_converter=SimpleFilterConverter())
     new_stmt = query._resolve_and_apply_joins(stmt=stmt, joins=joins)
@@ -142,7 +142,7 @@ def test_resolve_and_apply_joins_query_error() -> None:
         QueryError,
         match=msg,
     ):
-        query._resolve_and_apply_joins(stmt=select(MyModel), joins=NotModelClass)  # type: ignore
+        query._resolve_and_apply_joins(stmt=select(MyModel), joins=NotModelClass)  # type: ignore[reportArgumentType]
 
 
 @pytest.mark.parametrize(
@@ -194,14 +194,14 @@ def test_resolve_and_apply_joins_query_error() -> None:
         ),
     ],
 )
-def test_make_disable_filters(  # noqa
-    id_field: Any,  # noqa
+def test_make_disable_filters(
+    id_field: Any,
     ids_to_disable: set[Any],
-    disable_field: Any,  # noqa
+    disable_field: Any,
     field_type: type[datetime.datetime] | type[bool],
-    allow_filter_by_value: bool,  # noqa
-    extra_filters: Any,  # noqa
-    expected_result: Any,  # noqa
+    allow_filter_by_value: bool,
+    extra_filters: Any,
+    expected_result: Any,
 ) -> None:
     query = BaseQuery(filter_converter=SimpleFilterConverter())
     disable_filters = query._make_disable_filters(
@@ -239,11 +239,11 @@ def test_make_disable_filters(  # noqa
         ),
     ],
 )
-def test_make_search_filter(  # noqa
+def test_make_search_filter(
     search: str,
     search_by_args: tuple[Any, ...],
-    use_and_clause: bool,  # noqa
-    expected_result: Any,  # noqa
+    use_and_clause: bool,
+    expected_result: Any,
 ) -> None:
     query = BaseQuery(filter_converter=SimpleFilterConverter())
     search_filter = query._make_search_filter(
@@ -284,11 +284,11 @@ def test_make_search_filter(  # noqa
         ),
     ],
 )
-def test_get_item_stmt(  # noqa
-    filters: Any,  # noqa
-    joins: Any,  # noqa
-    loads: Any,  # noqa
-    expected_result: Any,  # noqa
+def test_get_item_stmt(
+    filters: Any,
+    joins: Any,
+    loads: Any,
+    expected_result: Any,
 ) -> None:
     query = BaseQuery(filter_converter=SimpleFilterConverter())
     get_item_stmt = query._get_item_stmt(
@@ -328,10 +328,10 @@ def test_get_item_stmt(  # noqa
         ),
     ],
 )
-def test_get_items_count_stmt(  # noqa
-    filters: Any,  # noqa
-    joins: Any,  # noqa
-    expected_result: Any,  # noqa
+def test_get_items_count_stmt(
+    filters: Any,
+    joins: Any,
+    expected_result: Any,
 ) -> None:
     query = BaseQuery(filter_converter=SimpleFilterConverter())
     get_items_count_stmt = query._get_items_count_stmt(
@@ -489,16 +489,16 @@ def test_get_items_count_stmt(  # noqa
         ),
     ],
 )
-def test_get_item_list_stmt(  # noqa
-    joins: Any,  # noqa
-    loads: Any,  # noqa
-    filters: Any,  # noqa
-    search: Any,  # noqa
-    search_by: Any,  # noqa
-    order_by: Any,  # noqa
-    limit: Any,  # noqa
-    offset: Any,  # noqa
-    expected_result: Any,  # noqa
+def test_get_item_list_stmt(
+    joins: Any,
+    loads: Any,
+    filters: Any,
+    search: Any,
+    search_by: Any,
+    order_by: Any,
+    limit: Any,
+    offset: Any,
+    expected_result: Any,
 ) -> None:
     query = BaseQuery(filter_converter=SimpleFilterConverter())
     get_item_list_stmt = query._get_item_list_stmt(
@@ -523,7 +523,7 @@ def test_get_item_list_stmt(  # noqa
         ([{"id": 1}], insert(MyModel).values([{"id": 1}]).returning(MyModel)),
     ],
 )
-def test_db_insert_stmt(data: Any, expected_result: Any) -> None:  # noqa: ANN401
+def test_db_insert_stmt(data: Any, expected_result: Any) -> None:
     query = BaseQuery(filter_converter=SimpleFilterConverter())
     db_insert_stmt = query._db_insert_stmt(model=MyModel, data=data)
     assert str(db_insert_stmt) == str(expected_result)
@@ -538,7 +538,7 @@ def test_db_insert_stmt(data: Any, expected_result: Any) -> None:  # noqa: ANN40
         ([{"id": 1}, {"id": 2}], [MyModel(id=1), MyModel(id=2)]),
     ],
 )
-def test_prepare_create_items(data: Any, expected_result: Any) -> None:  # noqa: ANN401
+def test_prepare_create_items(data: Any, expected_result: Any) -> None:
     query = BaseQuery(filter_converter=SimpleFilterConverter())
     prepared_values = query._prepare_create_items(model=MyModel, data=data)
     assert len(prepared_values) == len(expected_result)
@@ -565,10 +565,10 @@ def test_prepare_create_items(data: Any, expected_result: Any) -> None:  # noqa:
         ),
     ],
 )
-def test_db_update_stmt(  # noqa
-    data: Any,  # noqa
-    filters: Any,  # noqa
-    expected_result: Any,  # noqa
+def test_db_update_stmt(
+    data: Any,
+    filters: Any,
+    expected_result: Any,
 ) -> None:
     query = BaseQuery(filter_converter=SimpleFilterConverter())
     db_update_stmt = query._db_update_stmt(
@@ -586,7 +586,7 @@ def test_db_update_stmt(  # noqa
         ({"name": "aboba"}, delete(MyModel).where(MyModel.name == "aboba")),
     ],
 )
-def test_db_delete_stmt(filters: Any, expected_result: Any):  # noqa
+def test_db_delete_stmt(filters: Any, expected_result: Any):
     query = BaseQuery(filter_converter=SimpleFilterConverter())
     db_delete_stmt = query._db_delete_stmt(
         model=MyModel,
@@ -638,15 +638,15 @@ def test_db_delete_stmt(filters: Any, expected_result: Any):  # noqa
         ),
     ],
 )
-def test_disable_items_stmt(  # noqa
-    ids_to_disable: Any,  # noqa
-    id_field: Any,  # noqa
-    disable_field: Any,  # noqa
-    field_type: Any,  # noqa
-    allow_filter_by_value: Any,  # noqa
-    extra_filters: Any,  # noqa
-    expected_result: Any,  # noqa
-) -> None:  # noqa
+def test_disable_items_stmt(
+    ids_to_disable: Any,
+    id_field: Any,
+    disable_field: Any,
+    field_type: Any,
+    allow_filter_by_value: Any,
+    extra_filters: Any,
+    expected_result: Any,
+) -> None:
     query = BaseQuery(filter_converter=SimpleFilterConverter())
     disable_items_stmt = query._disable_items_stmt(
         model=MyModel,
@@ -660,7 +660,7 @@ def test_disable_items_stmt(  # noqa
     assert str(disable_items_stmt) == str(expected_result)
 
 
-def test_disable_items_stmt_type_error():  # noqa
+def test_disable_items_stmt_type_error():
     query = BaseQuery(filter_converter=SimpleFilterConverter())
     with pytest.raises(QueryError):
         query._disable_items_stmt(
@@ -668,13 +668,13 @@ def test_disable_items_stmt_type_error():  # noqa
             ids_to_disable={1, 2, 3},
             id_field=MyModel.id,
             disable_field=MyModel.bl,
-            field_type=str,  # type: ignore
+            field_type=str,  # type: ignore[reportArgumentType]
             allow_filter_by_value=True,
             extra_filters=None,
         )
 
 
-def test_disable_items_stmt_value_error():  # noqa
+def test_disable_items_stmt_value_error():
     query = BaseQuery(filter_converter=SimpleFilterConverter())
     with pytest.raises(
         QueryError,
@@ -695,12 +695,12 @@ def test_disable_items_stmt_value_error():  # noqa
     ('filters', "expected_result"),
     [
         (None, select(exists().select_from(MyModel))),
-        ({"id": 25}, select(exists().where(MyModel.id == 25))),
+        ({"id": 25}, select(exists().where(MyModel.id == 25))),  # noqa: PLR2004
     ],
 )
 def test_exists_items_stmt(
-    filters: Any,  # noqa
-    expected_result: bool,  # noqa
+    filters: Any,
+    expected_result: bool,
 ) -> None:
     query = BaseQuery(filter_converter=SimpleFilterConverter())
     disable_items_stmt = query._exists_items_stmt(model=MyModel, filters=filters)

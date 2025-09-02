@@ -41,7 +41,7 @@ def destroy_db(uri: str) -> None:
 def generate_datetime_list(
     *,
     n: int = 10,
-    tz: Any = None,  # noqa: ANN401
+    tz: Any = None,
 ) -> list[datetime.datetime]:
     """Generate list of datetimes of given length with or without timezone."""
     now = datetime.datetime.now(tz=tz)
@@ -206,11 +206,11 @@ class NotModelClass:
     pass
 
 
-class Base(DeclarativeBase):  # noqa: D101
+class Base(DeclarativeBase):
     pass
 
 
-class MyModel(Base):  # noqa: D101
+class MyModel(Base):
     __tablename__ = "my_model"
 
     id: Mapped[int] = mapped_column(primary_key=True)
@@ -229,7 +229,7 @@ class MyModel(Base):  # noqa: D101
         return ((self.name or "") + "" + (self.other_name or "")).strip()
 
 
-class OtherModel(Base):  # noqa: D101
+class OtherModel(Base):
     __tablename__ = "other_model"
 
     id: Mapped[int] = mapped_column(primary_key=True)

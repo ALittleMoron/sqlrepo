@@ -8,14 +8,13 @@ from sqlalchemy_filter_converter import SimpleFilterConverter
 from sqlrepo.queries import BaseSyncQuery
 from tests.utils import (
     MyModel,
-    OtherModel,
     assert_compare_db_item_list,
     assert_compare_db_item_list_with_dict,
+    assert_compare_db_item_list_with_list_of_dicts,
     assert_compare_db_item_none_fields,
     assert_compare_db_item_with_dict,
     assert_compare_db_items,
     coin_flip,
-    assert_compare_db_item_list_with_list_of_dicts,
 )
 
 if TYPE_CHECKING:
@@ -28,28 +27,28 @@ text_faker = Text(locale=Locale.EN)
 dt_faker = Datetime(locale=Locale.EN)
 
 
-def test_get_item(  # noqa: D103
+def test_get_item(
     db_sync_session: "Session",
     mymodel_sync_factory: "SyncFactoryFunctionProtocol[MyModel]",
 ) -> None:
     item = mymodel_sync_factory(db_sync_session, commit=True)
     query_obj = BaseSyncQuery(session=db_sync_session, filter_converter=SimpleFilterConverter())
-    db_item = query_obj.get_item(model=MyModel, filters=dict(id=item.id))
+    db_item = query_obj.get_item(model=MyModel, filters={"id": item.id})
     assert db_item is not None, f"MyModel with id {item.id} not found in db."
     assert_compare_db_items(item, db_item)
 
 
-def test_get_item_not_found(  # noqa: D103
+def test_get_item_not_found(
     db_sync_session: "Session",
     mymodel_sync_factory: "SyncFactoryFunctionProtocol[MyModel]",
 ) -> None:
     item = mymodel_sync_factory(db_sync_session, commit=True)
     query_obj = BaseSyncQuery(session=db_sync_session, filter_converter=SimpleFilterConverter())
-    db_item = query_obj.get_item(model=MyModel, filters=dict(id=item.id + 1))
+    db_item = query_obj.get_item(model=MyModel, filters={"id": item.id + 1})
     assert db_item is None, f"MyModel with id {item.id + 1} was found in db (but it shouldn't)."
 
 
-def test_get_items_count(  # noqa: D103
+def test_get_items_count(
     db_sync_session: "Session",
     mymodel_sync_factory: "SyncFactoryFunctionProtocol[MyModel]",
 ) -> None:
@@ -62,7 +61,7 @@ def test_get_items_count(  # noqa: D103
     assert count == create_count
 
 
-def test_get_items_count_with_filter(  # noqa: D103
+def test_get_items_count_with_filter(
     db_sync_session: "Session",
     mymodel_sync_factory: "SyncFactoryFunctionProtocol[MyModel]",
 ) -> None:
@@ -71,11 +70,11 @@ def test_get_items_count_with_filter(  # noqa: D103
         mymodel_sync_factory(db_sync_session, commit=False)
     db_sync_session.commit()
     query_obj = BaseSyncQuery(session=db_sync_session, filter_converter=SimpleFilterConverter())
-    count = query_obj.get_items_count(model=MyModel, filters=dict(id=item.id))
+    count = query_obj.get_items_count(model=MyModel, filters={"id": item.id})
     assert count == 1
 
 
-def test_get_items_list(  # noqa: D103
+def test_get_items_list(
     db_sync_session: "Session",
     mymodel_sync_factory: "SyncFactoryFunctionProtocol[MyModel]",
 ) -> None:
@@ -87,7 +86,7 @@ def test_get_items_list(  # noqa: D103
 
 
 # TODO: fix test. Now it just clone of test_get_items_list (previous test). Needs to check unique
-def test_get_items_list_with_unique(  # noqa: D103
+def test_get_items_list_with_unique(
     db_sync_session: "Session",
     mymodel_sync_factory: "SyncFactoryFunctionProtocol[MyModel]",
 ) -> None:
@@ -107,7 +106,7 @@ def test_get_items_list_with_unique(  # noqa: D103
 )
 def test_db_create(
     db_sync_session: "Session",
-    use_flush: bool,  # noqa: FBT001
+    use_flush: bool,
 ) -> None:
     query_obj = BaseSyncQuery(session=db_sync_session, filter_converter=SimpleFilterConverter())
     create_data = {
@@ -126,7 +125,7 @@ def test_db_create(
     assert_compare_db_item_with_dict(db_item, create_data, skip_keys_check=True)
 
 
-@pytest.mark.asyncio()
+@pytest.mark.asyncio
 @pytest.mark.parametrize(
     "use_flush",
     [
@@ -136,7 +135,7 @@ def test_db_create(
 )
 def test_db_create_list(
     db_sync_session: "Session",
-    use_flush: bool,  # noqa: FBT001
+    use_flush: bool,
 ) -> None:
     query_obj = BaseSyncQuery(session=db_sync_session, filter_converter=SimpleFilterConverter())
     create_data = [
@@ -202,7 +201,7 @@ def test_db_update(
     db_sync_session: "Session",
     mymodel_sync_factory: "SyncFactoryFunctionProtocol[MyModel]",
     update_data: dict[str, Any],
-    use_flush: bool,  # noqa: FBT001
+    use_flush: bool,
     items_count: int,
 ) -> None:
     for _ in range(items_count):
@@ -247,8 +246,8 @@ def test_change_item(
     db_sync_session: "Session",
     mymodel_sync_factory: "SyncFactoryFunctionProtocol[MyModel]",
     update_data: dict[str, Any],
-    use_flush: bool,  # noqa: FBT001
-    expected_updated_flag: bool,  # noqa: FBT001
+    use_flush: bool,
+    expected_updated_flag: bool,
 ) -> None:
     item = mymodel_sync_factory(db_sync_session)
     query_obj = BaseSyncQuery(session=db_sync_session, filter_converter=SimpleFilterConverter())
@@ -294,9 +293,9 @@ def test_change_item_none_check(
     db_sync_session: "Session",
     mymodel_sync_factory: "SyncFactoryFunctionProtocol[MyModel]",
     update_data: dict[str, Any],
-    expected_updated_flag: bool,  # noqa: FBT001
-    set_none: bool,  # noqa: FBT001
-    allowed_none_fields: Any,  # noqa: FBT001, ANN401
+    expected_updated_flag: bool,
+    set_none: bool,
+    allowed_none_fields: Any,
     none_set_fields: set[str],
 ) -> None:
     item = mymodel_sync_factory(db_sync_session)
@@ -314,7 +313,7 @@ def test_change_item_none_check(
 
 @pytest.mark.parametrize("use_flush", [True, False])
 def test_db_delete_direct_value(
-    use_flush: bool,  # noqa: FBT001
+    use_flush: bool,
     db_sync_session: "Session",
     mymodel_sync_factory: "SyncFactoryFunctionProtocol[MyModel]",
 ) -> None:
@@ -331,7 +330,7 @@ def test_db_delete_direct_value(
 
 @pytest.mark.parametrize("use_flush", [True, False])
 def test_db_delete_multiple_values(
-    use_flush: bool,  # noqa: FBT001
+    use_flush: bool,
     db_sync_session: "Session",
     mymodel_sync_factory: "SyncFactoryFunctionProtocol[MyModel]",
 ) -> None:
@@ -352,7 +351,7 @@ def test_db_delete_multiple_values(
     [True, False],
 )
 def test_disable_items_direct_value(
-    use_flush: bool,  # noqa: FBT001
+    use_flush: bool,
     db_sync_session: "Session",
     mymodel_sync_factory: "SyncFactoryFunctionProtocol[MyModel]",
 ) -> None:
@@ -377,7 +376,7 @@ def test_disable_items_direct_value(
     )
 
 
-def test_items_exists_success_any_item(  # noqa: D103
+def test_items_exists_success_any_item(
     db_sync_session: "Session",
     mymodel_sync_factory: "SyncFactoryFunctionProtocol[MyModel]",
 ) -> None:
@@ -388,7 +387,7 @@ def test_items_exists_success_any_item(  # noqa: D103
     assert exists is True
 
 
-def test_items_exists_success_direct_item(  # noqa: D103
+def test_items_exists_success_direct_item(
     db_sync_session: "Session",
     mymodel_sync_factory: "SyncFactoryFunctionProtocol[MyModel]",
 ) -> None:
@@ -399,13 +398,13 @@ def test_items_exists_success_direct_item(  # noqa: D103
     assert exists is True
 
 
-def test_items_not_exists(db_sync_session: "Session") -> None:  # noqa: D103
+def test_items_not_exists(db_sync_session: "Session") -> None:
     query_obj = BaseSyncQuery(session=db_sync_session, filter_converter=SimpleFilterConverter())
     exists = query_obj.items_exists(model=MyModel, filters=None)
     assert exists is False
 
 
-def test_items_not_exists_direct_item(  # noqa: D103
+def test_items_not_exists_direct_item(
     db_sync_session: "Session",
     mymodel_sync_factory: "SyncFactoryFunctionProtocol[MyModel]",
 ) -> None:
