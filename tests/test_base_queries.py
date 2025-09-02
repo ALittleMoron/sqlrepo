@@ -142,7 +142,7 @@ def test_resolve_and_apply_joins_query_error() -> None:
         QueryError,
         match=msg,
     ):
-        query._resolve_and_apply_joins(stmt=select(MyModel), joins=NotModelClass)
+        query._resolve_and_apply_joins(stmt=select(MyModel), joins=NotModelClass)  # type: ignore
 
 
 @pytest.mark.parametrize(
@@ -668,7 +668,7 @@ def test_disable_items_stmt_type_error():  # noqa
             ids_to_disable={1, 2, 3},
             id_field=MyModel.id,
             disable_field=MyModel.bl,
-            field_type=str,
+            field_type=str,  # type: ignore
             allow_filter_by_value=True,
             extra_filters=None,
         )

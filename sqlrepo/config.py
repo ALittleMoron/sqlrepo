@@ -11,7 +11,6 @@ from sqlalchemy_filter_converter import (
 from sqlalchemy_filter_converter.types import FilterConverterStrategiesLiteral
 
 if TYPE_CHECKING:
-
     # noinspection PyUnresolvedReferences
     from sqlrepo.types import DisableField, DisableIdField, SpecificColumnMapping, StrField
 
@@ -139,6 +138,5 @@ class RepositoryConfig:
 
     def get_filter_convert(self) -> BaseFilterConverter:
         """Get filter convert class from passed strategy."""
-        return filter_convert_classes[self.filter_convert_strategy](
-            specific_column_mapping=self.specific_column_mapping,
-        )
+        converter_class = filter_convert_classes[self.filter_convert_strategy]
+        return converter_class(specific_column_mapping=self.specific_column_mapping)

@@ -7,10 +7,10 @@ from sqlalchemy import ForeignKey, inspect
 from sqlalchemy.exc import SQLAlchemyError
 from sqlalchemy.ext.hybrid import hybrid_method, hybrid_property
 from sqlalchemy.orm import DeclarativeBase, Mapped, mapped_column, relationship
-from sqlalchemy_utils import create_database  # type: ignore[reportMissingTypeStubs]
-from sqlalchemy_utils import database_exists  # type: ignore[reportMissingTypeStubs]
 from sqlalchemy_utils import (
-    drop_database,  # type: ignore[reportMissingTypeStubs]; type: ignore[reportMissingTypeStubs]
+    create_database,
+    database_exists,
+    drop_database,
 )
 
 if TYPE_CHECKING:

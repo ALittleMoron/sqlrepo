@@ -362,7 +362,7 @@ def test_already_set_schemas() -> None:
 def test_cant_eval_forward_ref() -> None:
     with pytest.warns(ServiceClassIncorrectUseWarning):
 
-        class MyTestService(BaseSyncService["OtherModel", "OtherDetail", "OtherList"]): ...
+        class MyTestService(BaseSyncService["OtherModel", "OtherDetail", "OtherList"]): ...  # type: ignore
 
 
 def test_can_eval_forward_ref() -> None:
@@ -378,7 +378,7 @@ def test_generic_incorrect_type() -> None:
         match="Passed GenericType is not pydantic BaseModel subclass.",
     ):
 
-        class MyService(BaseSyncService[int, int, int]): ...
+        class MyService(BaseSyncService[int, int, int]): ...  # type: ignore
 
 
 def test_no_generic() -> None:
