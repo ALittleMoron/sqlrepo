@@ -74,11 +74,7 @@ async def db_async_engine(
 @pytest.fixture
 def db_sync_session_factory(db_sync_engine: "Engine") -> "scoped_session[Session]":
     return scoped_session(
-        sessionmaker(
-            bind=db_sync_engine,
-            autoflush=False,
-            expire_on_commit=False,
-        ),
+        sessionmaker(bind=db_sync_engine, autoflush=False, expire_on_commit=False),
     )
 
 
@@ -87,11 +83,7 @@ def db_async_session_factory(
     db_async_engine: "AsyncEngine",
 ) -> "async_scoped_session[AsyncSession]":
     return async_scoped_session(
-        async_sessionmaker(
-            bind=db_async_engine,
-            autoflush=False,
-            expire_on_commit=False,
-        ),
+        async_sessionmaker(bind=db_async_engine, autoflush=False, expire_on_commit=False),
         asyncio.current_task,
     )
 
