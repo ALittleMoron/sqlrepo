@@ -1,4 +1,4 @@
-name: Testing
+name: Linting
 
 on:
   workflow_call:
@@ -6,10 +6,6 @@ on:
       python-version:
         required: true
         type: string
-      coverage:
-        required: false
-        type: boolean
-        default: false
       os:
         required: false
         type: string
@@ -21,47 +17,49 @@ on:
 
 
 jobs:
-  test:
+  lint:
     timeout-minutes: ${{ inputs.timeout }}
     runs-on: ${{ inputs.os }}
-    defaults:
-      run:
-        shell: bash
     steps:
       - uses: actions/checkout@v4
-      - name: Set up Python ${{ inputs.python-version }}
+      - name: "Set up Python"
         uses: actions/setup-python@v4
         with:
           python-version: ${{ inputs.python-version }}
-      - name: Set up PDM
+      - name: "Install PDM"
         uses: pdm-project/setup-pdm@v3
         with:
           python-version: ${{ inputs.python-version }}
+      - name: "Install UV"
+        uses: astral-sh/setup-uv@v6
+        with:
+          python-version: ${{ inputs.python-version }}
       - uses: actions/cache@v3
-        name: Define a cache for the virtual environment based on the dependencies lock file
+        name: "Define a cache for the virtual environment based on the dependencies lock file"
         with:
           path: ./.venv
-          key: venv-${{ hashFiles('pdm.lock') }}
-      - name: Install the project dependencies
+          key: venv-${{ hashFiles('uv.lock') }}
+      - name: "Install the project dependencies"
         run: make install
-      - name: Run the automated tests with coverage
-        if: ${{ inputs.coverage }}
+      - name: "Run linting"
+        run: make lint
+      - name: "Run the automated tests with coverage"
         run: make tests
-      - name: Coverage Badge
+      - name: "Coverage badge"
         uses: tj-actions/coverage-badge-py@v2
-      - name: Verify Changed files
+      - name: "Verify badge changed"
         uses: tj-actions/verify-changed-files@v16
         id: verify-changed-files
         with:
           files: coverage.svg
-      - name: Commit files
+      - name: "Commit badge"
         if: steps.verify-changed-files.outputs.files_changed == 'true'
         run: |
           git config --local user.email "github-actions[bot]@users.noreply.github.com"
           git config --local user.name "github-actions[bot]"
           git add coverage.svg
           git commit -m "Updated coverage.svg"
-      - name: Push changes
+      - name: "Push new badge"
         if: steps.verify-changed-files.outputs.files_changed == 'true'
         uses: ad-m/github-push-action@master
         with:
