@@ -4,7 +4,7 @@ import pytest
 from mimesis import Datetime, Locale, Text
 from sqlalchemy import func, select
 
-from sqlrepo.config import RepositoryConfig
+from sqlrepo.conf.config import RepositoryConfig
 from sqlrepo.exc import RepositoryAttributeError
 from sqlrepo.repositories import AsyncRepository
 from tests.utils import (

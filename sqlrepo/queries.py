@@ -19,8 +19,8 @@ from sqlalchemy_dev_utils import (
 from sqlalchemy_filter_converter import BaseFilterConverter
 
 from sqlrepo.abc import AbstractAsyncQuery, AbstractSyncQuery
+from sqlrepo.conf.logger import default_logger
 from sqlrepo.exc import QueryError
-from sqlrepo.logger import default_logger
 
 # noinspection PyUnresolvedReferences
 from sqlrepo.types import (

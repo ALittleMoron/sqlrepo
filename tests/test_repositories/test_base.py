@@ -7,7 +7,7 @@ from sqlalchemy_filter_converter import (
     SimpleFilterConverter,
 )
 
-from sqlrepo.config import RepositoryConfig
+from sqlrepo.conf.config import RepositoryConfig
 from sqlrepo.exc import RepositoryAttributeError
 from sqlrepo.repositories import BaseRepository
 from tests.utils import MyModel

@@ -1,4 +1,5 @@
-from .config import RepositoryConfig as RepositoryConfig
+from .conf.config import RepositoryConfig as RepositoryConfig
+from .conf.logger import default_logger as default_logger
 from .queries import BaseAsyncQuery as BaseAsyncQuery
 from .queries import BaseQuery as BaseQuery
 from .queries import BaseSyncQuery as BaseSyncQuery

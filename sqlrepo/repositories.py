@@ -18,8 +18,8 @@ from sqlalchemy.orm import DeclarativeBase as Base
 
 from sqlrepo import exc as sqlrepo_exc
 from sqlrepo.abc import AbstractAsyncRepository, AbstractSyncRepository
-from sqlrepo.config import RepositoryConfig
-from sqlrepo.constants import (
+from sqlrepo.conf.config import RepositoryConfig
+from sqlrepo.conf.constants import (
     REPOSITORY_GENERIC_TYPE_IS_NOT_CLASS_WARNING,
     REPOSITORY_GENERIC_TYPE_IS_NOT_MODEL,
     REPOSITORY_GENERIC_TYPE_NOT_PASSED_WARNING,
@@ -31,7 +31,7 @@ from sqlrepo.constants import (
     REPOSITORY_RESOLVE_FORWARD_REF_WARNING_TEMPLATE,
     REPOSITORY_VALIDATE_DISABLE_ATTRIBUTES_ERROR,
 )
-from sqlrepo.logger import RepositoryModelClassIncorrectUseWarning, default_logger
+from sqlrepo.conf.logger import RepositoryModelClassIncorrectUseWarning, default_logger
 from sqlrepo.queries import BaseAsyncQuery, BaseSyncQuery
 from sqlrepo.types import BaseSQLAlchemyModel
 from sqlrepo.wrappers import wrap_any_exception_manager
