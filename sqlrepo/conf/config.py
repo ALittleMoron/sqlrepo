@@ -110,8 +110,7 @@ class RepositoryConfig:
     Warning! Ambiguous option!
     ==========================
 
-    Current version of ``sqlrepo`` works with load strategies with user configured option
-    ``load_strategy``. In order to make ``list`` method works stable, this option is used.
+    In order to make ``list`` method works stable, this option is used.
     If you don't work with relationships in your model or you don't need unique (for example,
     if you use selectinload), set this option to False. Otherwise keep it in True state.
     """
@@ -133,7 +132,7 @@ class RepositoryConfig:
             ``=, >, <, >=, <=, is, is_not, between, contains``
 
         ``django-like`` - ``key-value`` dict with django-like lookups system. See django docs for
-        more info.
+        more info. Currently, lookup by relations is not supported.
     """
 
     def get_filter_convert(self) -> BaseFilterConverter:

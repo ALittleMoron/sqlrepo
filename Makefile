@@ -7,7 +7,7 @@ UV := $(shell command -v uv 2> /dev/null)
 .PHONY: install
 install:
 	@if [ -z $(UV) ]; then echo "UV could not be found."; exit 2; fi
-	$(UV) install -G:all --no-self
+	$(UV) sync --all-extras
 
 
 .PHONY: shell

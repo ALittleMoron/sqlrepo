@@ -28,7 +28,7 @@ or use. I want to simplify work with repositories, so this is TODO for my projec
       parts, where it can be used.
 * [x] Integrate sqlrepo with FastAPI or some other web-frameworks.
       NOTE 1: added since 1.5.0. Continued until 2.0.0. I currently not aimed to work on FastAPI.
-      NOTE 2: removed in 6.0.0. Bad integration. 
+      NOTE 2: removed since 6.0.0. Bad integration. 
 * [x] Add pydantic-like configuration. Current implementation works on ClassVar. I want to separate
       configuration and main repository code.
       NOTE: added since 3.0.0
@@ -36,6 +36,8 @@ or use. I want to simplify work with repositories, so this is TODO for my projec
       repository model_class checker method - __init_subclass__) have generic message, that has
       not enough context to understand it and locate incorrect usage code. 
       NOTE: added since 5.1.2
+
+For more TODOs see [TODO file](./TODO.md)
 
 If all these todo items are finished, it means, that all, what I want, is implemented.
 If you want to give me advice or feedback, you are welcome.
