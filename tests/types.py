@@ -12,11 +12,11 @@ class SyncFactoryFunctionProtocol(Protocol[T_co]):
     """Protocol for Sync functions-factories that create db items."""
 
     @staticmethod
-    def __call__(  # noqa: D102
+    def __call__(
         session: "Session",
         *,
         commit: bool = False,
-        **kwargs: Any,  # noqa: ANN401
+        **kwargs: Any,
     ) -> T_co: ...
 
 
@@ -24,9 +24,9 @@ class AsyncFactoryFunctionProtocol(Protocol[T_co]):
     """Protocol for Sync functions-factories that create db items."""
 
     @staticmethod
-    async def __call__(  # noqa: D102
+    async def __call__(
         session: "AsyncSession",
         *,
         commit: bool = False,
-        **kwargs: Any,  # noqa: ANN401
+        **kwargs: Any,
     ) -> T_co: ...

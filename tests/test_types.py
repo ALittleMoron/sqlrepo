@@ -2,7 +2,7 @@ from typing import TYPE_CHECKING, TypeVar
 
 import pytest
 
-from sqlrepo import constants as c
+from sqlrepo.conf import constants
 from sqlrepo.repositories import BaseRepository, RepositoryModelClassIncorrectUseWarning
 from tests.utils import MyModel
 
@@ -34,16 +34,16 @@ def test_extract_model_from_generic_eval_forward_ref() -> None:
 def test_extract_model_from_generic_generic_incorrect_type() -> None:
     with pytest.warns(
         RepositoryModelClassIncorrectUseWarning,
-        match=c.REPOSITORY_GENERIC_TYPE_IS_NOT_MODEL,
+        match=constants.REPOSITORY_GENERIC_TYPE_IS_NOT_MODEL,
     ):
 
-        class MyRepo(BaseRepository[int]): ...
+        class MyRepo(BaseRepository[int]): ...  # type: ignore[reportInvalidTypeArguments]
 
 
 def test_extract_model_from_generic_no_generic() -> None:
     with pytest.warns(
         RepositoryModelClassIncorrectUseWarning,
-        match=c.REPOSITORY_GENERIC_TYPE_NOT_PASSED_WARNING,
+        match=constants.REPOSITORY_GENERIC_TYPE_NOT_PASSED_WARNING,
     ):
 
         class MyRepo(BaseRepository): ...
@@ -52,19 +52,19 @@ def test_extract_model_from_generic_no_generic() -> None:
 def test_extract_model_from_generic_type_var() -> None:
     with pytest.warns(
         RepositoryModelClassIncorrectUseWarning,
-        match=c.REPOSITORY_GENERIC_TYPE_TYPE_VAR_PASSED_WARNING,
+        match=constants.REPOSITORY_GENERIC_TYPE_TYPE_VAR_PASSED_WARNING,
     ):
 
-        class MyRepo(BaseRepository[T]): ...
+        class MyRepo(BaseRepository[T]): ...  # type: ignore[reportInvalidTypeArguments]
 
 
 def test_extract_model_from_generic_generic_not_class() -> None:
     with pytest.warns(
         RepositoryModelClassIncorrectUseWarning,
-        match=c.REPOSITORY_GENERIC_TYPE_IS_NOT_CLASS_WARNING,
+        match=constants.REPOSITORY_GENERIC_TYPE_IS_NOT_CLASS_WARNING,
     ):
 
-        class MyRepo(BaseRepository['25']): ...
+        class MyRepo(BaseRepository['25']): ...  # type: ignore[reportInvalidTypeArguments]
 
 
 def test_extract_model_from_generic_correct_use() -> None:
@@ -83,3 +83,9 @@ def test_extract_model_from_generic_left_multiple_inheritance_correct_use() -> N
     class CorrectRepo(BaseRepository[MyModel], int): ...
 
     assert CorrectRepo.model_class == MyModel
+
+
+def test_extract_model_from_generic_unsafe_generic() -> None:
+    with pytest.raises(SyntaxError):
+
+        class MyRepo(BaseRepository['import sys; sys.exit(255)']): ...  # type: ignore  # noqa: PGH003

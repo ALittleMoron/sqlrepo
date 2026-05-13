@@ -7,11 +7,6 @@ from sqlalchemy import ForeignKey, inspect
 from sqlalchemy.exc import SQLAlchemyError
 from sqlalchemy.ext.hybrid import hybrid_method, hybrid_property
 from sqlalchemy.orm import DeclarativeBase, Mapped, mapped_column, relationship
-from sqlalchemy_utils import create_database  # type: ignore[reportMissingTypeStubs]
-from sqlalchemy_utils import database_exists  # type: ignore[reportMissingTypeStubs]
-from sqlalchemy_utils import (
-    drop_database,  # type: ignore[reportMissingTypeStubs]; type: ignore[reportMissingTypeStubs]
-)
 
 if TYPE_CHECKING:
     from sqlalchemy.ext.asyncio import AsyncSession
@@ -24,32 +19,6 @@ T = TypeVar("T")
 def coin_flip() -> bool:
     """Coin flip: True or False."""
     return bool(random.getrandbits(1))
-
-
-def create_db(uri: str) -> None:
-    """Drop the database at ``uri`` and create a brand new one."""
-    destroy_db(uri)
-    create_database(uri)
-
-
-def destroy_db(uri: str) -> None:
-    """Destroy the database at ``uri``, if it exists."""
-    if database_exists(uri):
-        drop_database(uri)
-
-
-def generate_datetime_list(
-    *,
-    n: int = 10,
-    tz: Any = None,  # noqa: ANN401
-) -> list[datetime.datetime]:
-    """Generate list of datetimes of given length with or without timezone."""
-    now = datetime.datetime.now(tz=tz)
-    res = [now]
-    for i in range(1, n):
-        delta = datetime.timedelta(days=i)
-        res.append(now + delta)
-    return res
 
 
 def assert_compare_db_items(item1: "DeclarativeBase", item2: "DeclarativeBase") -> None:
@@ -206,11 +175,11 @@ class NotModelClass:
     pass
 
 
-class Base(DeclarativeBase):  # noqa: D101
+class Base(DeclarativeBase):
     pass
 
 
-class MyModel(Base):  # noqa: D101
+class MyModel(Base):
     __tablename__ = "my_model"
 
     id: Mapped[int] = mapped_column(primary_key=True)
@@ -229,7 +198,7 @@ class MyModel(Base):  # noqa: D101
         return ((self.name or "") + "" + (self.other_name or "")).strip()
 
 
-class OtherModel(Base):  # noqa: D101
+class OtherModel(Base):
     __tablename__ = "other_model"
 
     id: Mapped[int] = mapped_column(primary_key=True)

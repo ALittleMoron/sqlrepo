@@ -2,10 +2,12 @@
 
 import importlib
 import warnings
+from dataclasses import dataclass, field
 from inspect import isclass
 from typing import (
     TYPE_CHECKING,
     Any,
+    ClassVar,
     ForwardRef,
     Generic,
     TypeVar,
@@ -16,8 +18,8 @@ from sqlalchemy.orm import DeclarativeBase as Base
 
 from sqlrepo import exc as sqlrepo_exc
 from sqlrepo.abc import AbstractAsyncRepository, AbstractSyncRepository
-from sqlrepo.config import RepositoryConfig
-from sqlrepo.constants import (
+from sqlrepo.conf.config import RepositoryConfig
+from sqlrepo.conf.constants import (
     REPOSITORY_GENERIC_TYPE_IS_NOT_CLASS_WARNING,
     REPOSITORY_GENERIC_TYPE_IS_NOT_MODEL,
     REPOSITORY_GENERIC_TYPE_NOT_PASSED_WARNING,
@@ -29,7 +31,7 @@ from sqlrepo.constants import (
     REPOSITORY_RESOLVE_FORWARD_REF_WARNING_TEMPLATE,
     REPOSITORY_VALIDATE_DISABLE_ATTRIBUTES_ERROR,
 )
-from sqlrepo.logger import RepositoryModelClassIncorrectUseWarning, default_logger
+from sqlrepo.conf.logger import RepositoryModelClassIncorrectUseWarning, default_logger
 from sqlrepo.queries import BaseAsyncQuery, BaseSyncQuery
 from sqlrepo.types import BaseSQLAlchemyModel
 from sqlrepo.wrappers import wrap_any_exception_manager
@@ -139,6 +141,7 @@ def extract_model_from_generic(cls: type[Any]) -> "type[Base] | None":  # noqa: 
     return model
 
 
+@dataclass()
 class BaseRepository(Generic[BaseSQLAlchemyModel]):
     """Base repository class.
 
@@ -146,14 +149,14 @@ class BaseRepository(Generic[BaseSQLAlchemyModel]):
     directly (not recommended.)
     """
 
-    __inheritance_check_model_class__: bool = True
+    __inheritance_check_model_class__: ClassVar[bool] = True
     """
     Private custom magic property.
 
     Use it, if you want to inherit Repository without checking model_class attribute.
     """
 
-    model_class: type["BaseSQLAlchemyModel"]
+    model_class: ClassVar[type["BaseSQLAlchemyModel"]]  # type: ignore[reportGeneralTypeIssues]
     """
     Model class for repository.
 
@@ -173,7 +176,7 @@ class BaseRepository(Generic[BaseSQLAlchemyModel]):
     ```
     """
 
-    config = RepositoryConfig()
+    config: ClassVar[RepositoryConfig] = RepositoryConfig()
     """Repository config, that contains all settings.
 
     To add your own settings, inherit RepositoryConfig and add your own fields, then init it in
@@ -200,6 +203,7 @@ class BaseRepository(Generic[BaseSQLAlchemyModel]):
         cls.model_class = model_class  # type: ignore[reportAttributeAccessIssue]
 
 
+@dataclass()
 class BaseAsyncRepository(BaseRepository[BaseSQLAlchemyModel]):
     """Base repository class with async interface.
 
@@ -208,20 +212,18 @@ class BaseAsyncRepository(BaseRepository[BaseSQLAlchemyModel]):
     """
 
     __inheritance_check_model_class__ = False
-    query_class: type["BaseAsyncQuery"] = BaseAsyncQuery
 
-    def __init__(
-        self,
-        session: "AsyncSession",
-        logger: "LoggerProtocol" = default_logger,
-    ) -> None:
-        self.session = session
-        self.logger = logger
+    session: "AsyncSession" = field()
+    logger: "LoggerProtocol" = field(default=default_logger)
+    query_class: type["BaseAsyncQuery"] = field(default=BaseAsyncQuery)
+    queries: BaseAsyncQuery = field(init=False)
+
+    def __post_init__(self) -> None:  # noqa: D105
         self.queries = self.query_class(
-            session=session,
+            session=self.session,
             filter_converter=self.config.get_filter_convert(),
             specific_column_mapping=self.config.specific_column_mapping,
-            logger=logger,
+            logger=self.logger,
         )
 
     async def _get(
@@ -385,6 +387,7 @@ class BaseAsyncRepository(BaseRepository[BaseSQLAlchemyModel]):
             )
 
 
+@dataclass()
 class BaseSyncRepository(BaseRepository[BaseSQLAlchemyModel]):
     """Base repository class with sync interface.
 
@@ -393,16 +396,18 @@ class BaseSyncRepository(BaseRepository[BaseSQLAlchemyModel]):
     """
 
     __inheritance_check_model_class__ = False
-    query_class: type["BaseSyncQuery"] = BaseSyncQuery
 
-    def __init__(self, session: "Session", logger: "LoggerProtocol" = default_logger) -> None:
-        self.session = session
-        self.logger = logger
+    session: "Session" = field()
+    logger: "LoggerProtocol" = field(default=default_logger)
+    query_class: type["BaseSyncQuery"] = field(default=BaseSyncQuery)
+    queries: BaseSyncQuery = field(init=False)
+
+    def __post_init__(self) -> None:  # noqa: D105
         self.queries = self.query_class(
-            session=session,
+            session=self.session,
             filter_converter=self.config.get_filter_convert(),
             specific_column_mapping=self.config.specific_column_mapping,
-            logger=logger,
+            logger=self.logger,
         )
 
     def _get(

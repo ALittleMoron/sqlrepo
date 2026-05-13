@@ -18,10 +18,8 @@ from sqlrepo.types import (
 if TYPE_CHECKING:
     from collections.abc import Sequence
 
-    from sqlalchemy.orm.decl_api import DeclarativeBase as Base
 
-
-class AbstractSyncQuery(ABC):
+class AbstractSyncQuery(ABC, Generic[BaseSQLAlchemyModel]):
     @abstractmethod
     def get_item(
         self,
@@ -100,7 +98,7 @@ class AbstractSyncQuery(ABC):
     def delete_item(
         self,
         *,
-        item: "Base",
+        item: "BaseSQLAlchemyModel",
         use_flush: bool = False,
     ) -> bool: ...
 
@@ -126,7 +124,7 @@ class AbstractSyncQuery(ABC):
     ) -> bool: ...
 
 
-class AbstractAsyncQuery(ABC):
+class AbstractAsyncQuery(ABC, Generic[BaseSQLAlchemyModel]):
     @abstractmethod
     async def get_item(
         self,
@@ -205,7 +203,7 @@ class AbstractAsyncQuery(ABC):
     async def delete_item(
         self,
         *,
-        item: "Base",
+        item: "BaseSQLAlchemyModel",
         use_flush: bool = False,
     ) -> bool: ...
 

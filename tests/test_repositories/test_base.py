@@ -7,7 +7,7 @@ from sqlalchemy_filter_converter import (
     SimpleFilterConverter,
 )
 
-from sqlrepo.config import RepositoryConfig
+from sqlrepo.conf.config import RepositoryConfig
 from sqlrepo.exc import RepositoryAttributeError
 from sqlrepo.repositories import BaseRepository
 from tests.utils import MyModel
@@ -54,7 +54,7 @@ def test_validate_disable_attributes_raise_error() -> None:
 def test_get_filter_convert_class(
     strategy: Literal["simple", "advanced", "django"],
     expected_class: Any,
-) -> None:  # noqa: ANN401
+) -> None:
     class CorrectRepo(BaseRepository[MyModel]):
         config = RepositoryConfig(filter_convert_strategy=strategy)
 

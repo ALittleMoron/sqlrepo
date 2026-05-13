@@ -1,27 +1,16 @@
-name: "test, lint and publish"
+name: "Check project quality: test, lint, type-checking, vulnerability and dead code detection"
 
 on:
   push:
   workflow_dispatch:
 
 jobs:
-  test:
-    name: "Test (${{ matrix.python-version }}"
+  quality:
+    name: "Check quality (Python ${{ matrix.python-version }}"
     strategy:
       fail-fast: true
       matrix:
         python-version: ["3.11", "3.12"]
-    uses: ./.github/workflows/_test.yaml
-    with:
-      coverage: true
-      python-version: ${{ matrix.python-version }}
-  lint:
-    name: "Lint (${{ matrix.python-version }}"
-    strategy:
-      fail-fast: true
-      matrix:
-        python-version: ["3.11", "3.12"]
-    needs: test
-    uses: ./.github/workflows/_lint.yaml
+    uses: ./.github/workflows/_quality.yaml
     with:
       python-version: ${{ matrix.python-version }}

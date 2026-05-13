@@ -1,18 +1,19 @@
 NAME := sqlrepo
-PDM := $(shell command -v pdm 2> /dev/null)
+TESTS := tests
+UV := $(shell command -v uv 2> /dev/null)
 
 .DEFAULT_GOAL := install
 
 .PHONY: install
 install:
-	@if [ -z $(PDM) ]; then echo "PDM could not be found."; exit 2; fi
-	$(PDM) install -G:all --no-self
+	@if [ -z $(UV) ]; then echo "UV could not be found."; exit 2; fi
+	$(UV) sync --all-extras
 
 
 .PHONY: shell
 shell:
-	@if [ -z $(PDM) ]; then echo "PDM could not be found."; exit 2; fi
-	$(ENV_VARS_PREFIX) $(PDM) run ipython --no-confirm-exit --no-banner --quick \
+	@if [ -z $(UV) ]; then echo "UV could not be found."; exit 2; fi
+	$(ENV_VARS_PREFIX) $(UV) run ipython --no-confirm-exit --no-banner --quick \
 	--InteractiveShellApp.extensions="autoreload" \
 	--InteractiveShellApp.exec_lines="%autoreload 2"
 
@@ -23,25 +24,30 @@ clean:
 
 .PHONY: lint
 lint:
-	@if [ -z $(PDM) ]; then echo "PDM could not be found."; exit 2; fi
-	$(PDM) run pyright $(NAME)
-	$(PDM) run black --config ./pyproject.toml --check $(NAME) --diff
-	$(PDM) run ruff check $(NAME)
-	$(PDM) run vulture $(NAME) --min-confidence 100 --exclude "*/types.py,*/logger.py,*/abc.py"
+	@if [ -z $(UV) ]; then echo "UV could not be found."; exit 2; fi
+	$(UV) run pyright $(NAME)
+	$(UV) run pyright $(TESTS)
+	$(UV) run black --config ./pyproject.toml --check $(NAME) --diff
+	$(UV) run black --config ./pyproject.toml --check $(TESTS) --diff
+	$(UV) run ruff check $(NAME)
+	$(UV) run ruff check $(TESTS)
+	$(UV) run vulture $(NAME) --min-confidence 100 --exclude "*/types.py,*/logger.py,*/abc.py"
+	$(UV) run vulture $(TESTS) --min-confidence 100 --exclude "*/types.py,*/logger.py,*/abc.py"
 
 .PHONY: fix
 fix:
-	@if [ -z $(PDM) ]; then echo "PDM could not be found."; exit 2; fi
-	$(PDM) run black --config ./pyproject.toml ./tests
-	$(PDM) run black --config ./pyproject.toml $(NAME)
-	$(PDM) run ruff check $(NAME) --config ./pyproject.toml --fix
+	@if [ -z $(UV) ]; then echo "UV could not be found."; exit 2; fi
+	$(UV) run black --config ./pyproject.toml $(NAME)
+	$(UV) run black --config ./pyproject.toml ./$(TESTS)
+	$(UV) run ruff check $(NAME) --config ./pyproject.toml --fix
+	$(UV) run ruff check $(TESTS) --config ./pyproject.toml --fix
 
 .PHONY: tests
 tests:
-	@if [ -z $(PDM) ]; then echo "PDM could not be found."; exit 2; fi
-	$(PDM) run coverage run -m pytest -vv
-	$(PDM) run coverage xml
-	$(PDM) run coverage report --fail-under=95
+	@if [ -z $(UV) ]; then echo "UV could not be found."; exit 2; fi
+	$(UV) run coverage run -m pytest -vv
+	$(UV) run coverage xml
+	$(UV) run coverage report --fail-under=95
 
 .PHONY: quality
 quality:
